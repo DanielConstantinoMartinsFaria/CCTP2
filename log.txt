@@ -1,0 +1,4 @@
+Directory:test
+IP:10.2.2.1
+FILES:
+aaaa.txt
