@@ -15,20 +15,22 @@ public class PeerUDP implements Runnable{
     private File directory;
     private DatagramSocket socket;
     private SocketAddress destination;
+    private InetAddress ip;
 
     public PeerUDP(DatagramSocket socket, String[] args, SocketAddress dest){
         this.socket=socket;
         this.destination=dest;
+        //this.ip=new InetAddress();
 
         String path=ROOT_DIR + "/" + args[0];
         directory=new File(path);
 
-        if(!directory.exists()) {
+        if(!directory.exists()&&!directory.mkdirs()) {
             System.out.println("ERROR");
         }
     }
 
-    private void logging(File directory, InetAddress ip) throws IOException {
+    private void logging() throws IOException {
         PrintWriter writer=new PrintWriter("log.txt", StandardCharsets.UTF_8);
 
         writer.println("Directory:"+directory.getName());
@@ -39,8 +41,17 @@ public class PeerUDP implements Runnable{
         writer.println(files.toString());
     }
 
+    public void runSender(){
+
+    }
+
     @Override
     public void run() {
-
+        if(destination!=null){
+            //runSender
+        }
+        else{
+            //runReciever
+        }
     }
 }

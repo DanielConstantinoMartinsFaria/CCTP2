@@ -24,6 +24,8 @@ public class ListaFicheiros {
 
     }
 
+    public void writeFiles()
+
     public String toString(){
         StringBuilder sb = new StringBuilder();
         for(Map.Entry<String,Long>entry:files.entrySet()){
