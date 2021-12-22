@@ -46,7 +46,7 @@ public class PeerUDP implements Runnable{
     }
 
     public void runSender() throws IOException {
-        Data.sendFile(socket,destination,port,"log.txt",directory);
+        Data.sendFile(socket,destination,port,"test/aaaa.txt",directory);
     }
 
     public void runReceiver() throws IOException, InterruptedException {

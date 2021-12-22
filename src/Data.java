@@ -47,6 +47,11 @@ public class Data {
                 e.printStackTrace();
             }
         }
+        try{
+            ACK.send(socket,address,port,(short)0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void sendPacket(DatagramSocket socket,InetAddress address,int port,byte[] fileData,short seq) throws IOException {
@@ -99,7 +104,7 @@ public class Data {
     private static byte[] unpad(byte[]array){
         int i=0;
         int j=0;
-        while (array[i]!=0) {
+        while (i< array.length && array[i] != 0) {
             j++;
             i++;
         }

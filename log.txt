@@ -1,5 +1,6 @@
 Directory:.
-Peer:nagasaki-Aspire-E5-551G
-Port:8989
+Peer:Not determined yet
+Port:0
 
+log.txt
 log.txt
