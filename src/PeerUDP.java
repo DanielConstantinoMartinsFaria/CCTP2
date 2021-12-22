@@ -41,14 +41,16 @@ public class PeerUDP implements Runnable{
         ListaFicheiros files=new ListaFicheiros();
         files.updateFiles(directory);
         writer.println(files.toString());
+        writer.flush();
+        writer.close();
     }
 
     public void runSender() throws IOException {
-        ACK.send(socket,destination,port, (short) 1);
+        Data.sendFile(socket,destination,port,"log.txt",directory);
     }
 
-    public void runReceiver() throws IOException {
-        System.out.println(ACK.receive(socket));
+    public void runReceiver() throws IOException, InterruptedException {
+        Data.receiveFile(socket,"teste/log.txt",directory);
     }
 
     @Override
@@ -57,7 +59,7 @@ public class PeerUDP implements Runnable{
             try{
                 runReceiver();
                 logging();
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         }

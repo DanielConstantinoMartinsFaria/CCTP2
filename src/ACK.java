@@ -31,7 +31,9 @@ public class ACK {
             return 0;
         }
         else {
-            return (short) (input.readShort());
+            short res=input.readShort();
+            System.out.println(res);
+            return res;
         }
 
     }
