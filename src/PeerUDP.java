@@ -41,17 +41,31 @@ public class PeerUDP implements Runnable{
         writer.println(files.toString());
     }
 
-    public void runSender(){
+    public void runSender() throws IOException {
+        ACK.send(socket,destination, (short) 1);
+    }
 
+    public void runReceiver() throws IOException {
+        System.out.println(ACK.receive(socket));
     }
 
     @Override
     public void run() {
         if(destination!=null){
-            //runSender
+            try{
+                runReceiver();
+                logging();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         else{
-            //runReciever
+            try{
+                runSender();
+                logging();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -44,17 +44,7 @@ public class Packet {
         socket.send(packet);
     }
 
-    public void sendError(DatagramSocket socket,SocketAddress address,byte errorCode,String message) throws IOException {
-        ByteArrayOutputStream baos=new ByteArrayOutputStream(SIZE);
-        DataOutputStream output = new DataOutputStream(baos);
-        output.write((byte)7);
-        output.write((byte)errorCode);
-        output.writeUTF(message);
-        output.write((byte)0);
-        output.flush();
-        DatagramPacket packet=new DatagramPacket(baos.toByteArray(), baos.size(),address);
-        socket.send(packet);
-    }
+
     /*
     public void receive(DatagramSocket socket) throws IOException {
         byte[] buffer=new byte[SIZE];

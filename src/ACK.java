@@ -18,6 +18,7 @@ public class ACK {
     public static short receive(DatagramSocket socket) throws IOException {
         byte[] buffer=new byte[Packet.SIZE];
         DatagramPacket packet = new DatagramPacket(buffer,Packet.SIZE);
+        //socket.setSoTimeout(1000);
         socket.receive(packet);
 
         ByteArrayInputStream bai=new ByteArrayInputStream(packet.getData());
@@ -29,7 +30,7 @@ public class ACK {
             return 0;
         }
         else {
-            return input.readShort();
+            return (short) (input.readShort()+1);
         }
 
     }

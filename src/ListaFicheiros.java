@@ -3,33 +3,36 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 public class ListaFicheiros {
-    private Map<String,Long> files;
+    private Set<String> files;
 
     public ListaFicheiros(){
-        files=new HashMap<>();
+        files=new TreeSet<>();
     }
 
     public void updateFiles(File directory){
         File[] files=directory.listFiles();
         if(files!=null){
             for(File f:files){
-                if(!f.isDirectory())this.files.put(f.getName(),f.length());
+                if(!f.isDirectory())this.files.add(f.getName());
             }
         }
     }
 
-    public void updateFiles(DataInputStream input){
-
+    public boolean checkDiff(ListaFicheiros list,Set<String>send,Set<String>request){
+        send=files.stream().filter(f->!list.files.contains(f)).collect(Collectors.toSet());
+        request=list.files.stream().filter(f->!files.contains(f)).collect(Collectors.toSet());
+        return send.size()!=0 && request.size()!=0;
     }
-
-    public void writeFiles()
-
+    
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        for(Map.Entry<String,Long>entry:files.entrySet()){
-            sb.append("\n").append(entry.getKey()).append(" - ").append(entry.getValue());
+        for(String entry:files){
+            sb.append("\n").append(entry);
         }
         return sb.toString();
     }
