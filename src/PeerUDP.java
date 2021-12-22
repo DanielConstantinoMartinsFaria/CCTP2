@@ -14,13 +14,13 @@ public class PeerUDP implements Runnable{
 
     private File directory;
     private DatagramSocket socket;
-    private SocketAddress destination;
-    private InetAddress ip;
+    private InetAddress destination;
+    private int port;
 
-    public PeerUDP(DatagramSocket socket, String[] args, SocketAddress dest){
+    public PeerUDP(DatagramSocket socket, String[] args, InetAddress dest,int port){
         this.socket=socket;
         this.destination=dest;
-        //this.ip=new InetAddress();
+        this.port=port;
 
         String path=ROOT_DIR + "/" + args[0];
         directory=new File(path);
@@ -34,7 +34,9 @@ public class PeerUDP implements Runnable{
         PrintWriter writer=new PrintWriter("log.txt", StandardCharsets.UTF_8);
 
         writer.println("Directory:"+directory.getName());
-        writer.print("IP:"+ip.getHostAddress());
+        if(destination!=null)writer.println("Peer:"+destination.getHostName());
+        else writer.println("Peer:Not determined yet");
+        writer.println("Port:"+port);
 
         ListaFicheiros files=new ListaFicheiros();
         files.updateFiles(directory);
@@ -42,7 +44,7 @@ public class PeerUDP implements Runnable{
     }
 
     public void runSender() throws IOException {
-        ACK.send(socket,destination, (short) 1);
+        ACK.send(socket,destination,port, (short) 1);
     }
 
     public void runReceiver() throws IOException {
@@ -51,7 +53,7 @@ public class PeerUDP implements Runnable{
 
     @Override
     public void run() {
-        if(destination!=null){
+        if(destination==null){
             try{
                 runReceiver();
                 logging();

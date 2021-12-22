@@ -1,10 +1,7 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketAddress;
-import java.net.SocketException;
+import java.net.*;
 import java.util.ArrayList;
 
 public class Data {
@@ -14,7 +11,7 @@ public class Data {
         File file = new File(directory.getAbsolutePath()+"/"+filename);
         try{
             FileInputStream input=new FileInputStream(file);
-            byte[] buffer=new byte[Packet.SIZE-3];
+            byte[] buffer=new byte[Peer.SIZE-3];
             while(input.read(buffer)!=0){
                 bytes.add(buffer);
             }
@@ -26,12 +23,12 @@ public class Data {
         return bytes;
     }
 
-    public static void sendFile(DatagramSocket socket, SocketAddress address,String filename,File directory){
+    public static void sendFile(DatagramSocket socket, InetAddress address,int port, String filename, File directory){
         ArrayList<byte[]>bytes=parsefile(filename,directory);
         short BLOCK_NUM=1;
         for(;BLOCK_NUM<=bytes.size();BLOCK_NUM++){
             try{
-                sendPacket(socket,address, bytes.get(BLOCK_NUM-1), BLOCK_NUM);
+                sendPacket(socket,address,port, bytes.get(BLOCK_NUM-1), BLOCK_NUM);
                 socket.setSoTimeout(1000);
                 BLOCK_NUM=ACK.receive(socket);
             } catch (SocketException e) {
@@ -42,8 +39,8 @@ public class Data {
         }
     }
 
-    private static void sendPacket(DatagramSocket socket,SocketAddress address,byte[] data,short seq) throws IOException {
-        DatagramPacket packet=new DatagramPacket(data, data.length,address);
+    private static void sendPacket(DatagramSocket socket,InetAddress address,int port,byte[] data,short seq) throws IOException {
+        DatagramPacket packet=new DatagramPacket(data, data.length,address,port);
         socket.send(packet);
     }
 }

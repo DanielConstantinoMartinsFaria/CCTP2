@@ -24,11 +24,11 @@ public class ListaFicheiros {
     }
 
     public boolean checkDiff(ListaFicheiros list,Set<String>send,Set<String>request){
-        send=files.stream().filter(f->!list.files.contains(f)).collect(Collectors.toSet());
-        request=list.files.stream().filter(f->!files.contains(f)).collect(Collectors.toSet());
+        send.addAll(files.stream().filter(f->!list.files.contains(f)).collect(Collectors.toSet()));
+        request.addAll(list.files.stream().filter(f->!files.contains(f)).collect(Collectors.toSet()));
         return send.size()!=0 && request.size()!=0;
     }
-    
+
     public String toString(){
         StringBuilder sb = new StringBuilder();
         for(String entry:files){
