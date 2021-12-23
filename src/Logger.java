@@ -27,6 +27,9 @@ public class Logger {
             Logger.erros=0;
             Logger.writer=new FileWriter(LOG_NAME);
             Logger.available=true;
+            writer.write("LOG:"+LOG_NAME);
+            writer.write("DIR:"+args[0]+"\n");
+            writer.write("PEER:"+args[1]+"\n\n\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -42,6 +45,11 @@ public class Logger {
         if(available){
             String msg= date()+"|"+"ERROR:"+": "+message;
             msgs.add(msg+"\n");
+            try{
+                writer.write(msg);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             erros++;
         }
     }
@@ -50,6 +58,11 @@ public class Logger {
         if(available){
             String msg= date()+"|"+"SENT TO: "+address.getHostName()+":"+port+" | File: "+filename+" Block: "+BLOCK_NUM;
             msgs.add(msg+"\n");
+            try{
+                writer.write(msg);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             envios++;
         }
     }
@@ -58,6 +71,11 @@ public class Logger {
         if(available){
             String msg= date()+"|"+"RECEIVED FROM: "+address.getHostName()+":"+port+" | File: "+filename+" Block: "+BLOCK_NUM;
             msgs.add(msg+"\n");
+            try{
+                writer.write(msg);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             rececoes++;
         }
     }
@@ -66,9 +84,6 @@ public class Logger {
         if(available){
             try{
                 available=false;
-                writer.write("LOG:"+LOG_NAME);
-                writer.write("DIR:"+args[0]+"\n");
-                writer.write("PEER:"+args[1]+"\n\n\n");
                 for(String msg:msgs){
                     writer.write(msg);
                 }
