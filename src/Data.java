@@ -44,7 +44,7 @@ public class Data {
                 sendPacket(socket,address,port, bytes.get(BLOCK_NUM-1), BLOCK_NUM);
                 Logger.envio(filename,address,port,BLOCK_NUM);
                 socket.setSoTimeout(1000);
-                short res= Ack.receive(socket);
+                BLOCK_NUM= Ack.receive(socket);
             } catch (SocketException e) {
                 Logger.erro("Timed out expecting ACK"+e.getMessage());
                 BLOCK_NUM--;
