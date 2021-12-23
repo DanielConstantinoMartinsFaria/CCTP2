@@ -27,10 +27,10 @@ public class Error {
 
             String message="";
             switch (errorCode){
-                case 0->message="";
-                case 1->message="FILE NOT FOUND:";
-                case 2->message="ACCESS VIOLATION";
-                case 3->message="WRONG PASSWORD";
+                case 0:message="";break;
+                case 1:message="FILE NOT FOUND:";break;
+                case 2:message="ACCESS VIOLATION";break;
+                case 3:message="WRONG PASSWORD";break;
             }
             message+=input.readUTF();
             Logger.erro(message);
