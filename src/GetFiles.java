@@ -40,7 +40,7 @@ public class GetFiles {
             return null;
         }
         else if(flag!=Peer.GETFILES){
-
+            return null;
         }
         else {
             Map<String,String>filePorts=new HashMap<>();
