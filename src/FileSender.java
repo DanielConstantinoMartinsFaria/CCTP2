@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -26,7 +27,7 @@ public class FileSender implements Runnable{
         try{
             DatagramSocket socket=new DatagramSocket();
             Data.sendFile(socket,address,port,filename,directory);
-        } catch (SocketException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
