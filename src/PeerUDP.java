@@ -46,7 +46,7 @@ public class PeerUDP implements Runnable{
 
     public void runReceiver() throws IOException, InterruptedException {
         List<String> files=new ArrayList<>();
-        DatagramPacket packet= FilesInfo.receiveFilesInfo(socket,ficheiros,files,args[2]);
+        DatagramPacket packet= FilesInfo.receiveFilesInfo(socket,ficheiros,files,args[2],0);
         if(packet==null) {
             return;
         }
@@ -55,6 +55,7 @@ public class PeerUDP implements Runnable{
         port=packet.getPort();
 
         List<DatagramSocket>sockets=new ArrayList<>();
+
         for(int i=0;i< files.size();i++){   //Abrir socket para receber os diferentes ficheiros
             DatagramSocket ds=new DatagramSocket();
             sockets.add(ds);

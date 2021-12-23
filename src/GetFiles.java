@@ -33,7 +33,7 @@ public class GetFiles {
 
         byte flag= input.readByte();
 
-        if(flag== FFSync.ERROR){
+        if(flag == FFSync.ERROR){
             Error.errorHandler(input);
             return null;
         }

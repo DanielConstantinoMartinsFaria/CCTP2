@@ -20,14 +20,16 @@ public class FilesInfo {
         socket.send(packet);
     }
 
-    public static DatagramPacket receiveFilesInfo(DatagramSocket socket, ListaFicheiros listaFicheiros, List<String> filesToGet,String password) throws IOException {
+    public static DatagramPacket receiveFilesInfo(DatagramSocket socket, ListaFicheiros listaFicheiros, List<String> filesToGet,String password,int count) throws IOException {
         byte[] buffer=new byte[FFSync.SIZE];
         DatagramPacket packet = new DatagramPacket(buffer, FFSync.SIZE);
         try{
-            socket.setSoTimeout(1000);
+            socket.setSoTimeout(5000);
             socket.receive(packet);
         } catch (SocketTimeoutException e){
             Logger.erro("Timed out expecting packet: "+e.getMessage());
+            if(count<20)receiveFilesInfo(socket,listaFicheiros,filesToGet,password,count+1);
+            return null;
         }
 
         ByteArrayInputStream bai=new ByteArrayInputStream(packet.getData());
