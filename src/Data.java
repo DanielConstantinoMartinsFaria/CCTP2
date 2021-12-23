@@ -44,8 +44,9 @@ public class Data {
                 sendPacket(socket,address,port, bytes.get(BLOCK_NUM-1), BLOCK_NUM);
                 Logger.envio(filename,address,port,BLOCK_NUM);
                 socket.setSoTimeout(1000);
-                BLOCK_NUM= Ack.receive(socket);
+                short res= Ack.receive(socket);
             } catch (SocketException e) {
+                Logger.erro("Timed out expecting ACK"+e.getMessage());
                 BLOCK_NUM--;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -85,6 +86,7 @@ public class Data {
                     socket.receive(packet);
                 } catch (SocketTimeoutException e){
                     Logger.erro("Timed out expecting packet: "+e.getMessage());
+                    Ack.send(socket,packet.getAddress(),packet.getPort(),BLOCK_NUM);
                 }
                 ByteArrayInputStream bai=new ByteArrayInputStream(packet.getData());
                 DataInputStream input=new DataInputStream(bai);

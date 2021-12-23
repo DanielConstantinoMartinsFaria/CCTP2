@@ -19,12 +19,8 @@ public class Ack {
     public static short receive(DatagramSocket socket) throws IOException {
         byte[] buffer=new byte[FFSync.SIZE];
         DatagramPacket packet = new DatagramPacket(buffer, FFSync.SIZE);
-        try{
-            socket.setSoTimeout(5000);
-            socket.receive(packet);
-        } catch (SocketTimeoutException e){
-            Logger.erro("Timed out expecting packet: "+e.getMessage());
-        }
+        socket.setSoTimeout(5000);
+        socket.receive(packet);
 
         Logger.mensagem("ACK",packet.getAddress(), packet.getPort());
 
