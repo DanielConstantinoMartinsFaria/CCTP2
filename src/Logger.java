@@ -83,6 +83,18 @@ public class Logger {
         }
     }
 
+    public static void mensagem(String tipo,InetAddress address, int port){
+        String msg= date()+"|"+"RECEIVED FROM: "+address.getHostName()+":"+port+" | Type: "+tipo;
+        msgs.add(msg+"\n");
+
+        try{
+            writer.write(msg);
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void end(){
         if(available){
             try{

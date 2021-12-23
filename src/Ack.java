@@ -26,6 +26,8 @@ public class Ack {
             Logger.erro("Timed out expecting packet: "+e.getMessage());
         }
 
+        Logger.mensagem("ACK",packet.getAddress(), packet.getPort());
+
         ByteArrayInputStream bai=new ByteArrayInputStream(packet.getData());
         DataInputStream input=new DataInputStream(bai);
 

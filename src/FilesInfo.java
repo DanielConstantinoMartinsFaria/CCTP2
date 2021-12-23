@@ -32,6 +32,8 @@ public class FilesInfo {
             return null;
         }
 
+        Logger.mensagem("FilesInfo",packet.getAddress(), packet.getPort());
+
         ByteArrayInputStream bai=new ByteArrayInputStream(packet.getData());
         DataInputStream input=new DataInputStream(bai);
 

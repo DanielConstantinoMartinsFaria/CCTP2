@@ -28,6 +28,8 @@ public class GetFiles {
         //socket.setSoTimeout(1000);
         socket.receive(packet);
 
+        Logger.mensagem("GetFiles",packet.getAddress(), packet.getPort());
+
         ByteArrayInputStream bai=new ByteArrayInputStream(packet.getData());
         DataInputStream input=new DataInputStream(bai);
 
