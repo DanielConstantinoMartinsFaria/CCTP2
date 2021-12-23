@@ -47,6 +47,7 @@ public class Logger {
             msgs.add(msg+"\n");
             try{
                 writer.write(msg);
+                writer.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -60,6 +61,7 @@ public class Logger {
             msgs.add(msg+"\n");
             try{
                 writer.write(msg);
+                writer.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -73,6 +75,7 @@ public class Logger {
             msgs.add(msg+"\n");
             try{
                 writer.write(msg);
+                writer.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
