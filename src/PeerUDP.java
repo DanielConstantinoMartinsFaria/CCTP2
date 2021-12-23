@@ -51,6 +51,7 @@ public class PeerUDP implements Runnable{
             return;
         }
         destination=packet.getAddress();
+        System.out.println(destination.getHostName());
         port=packet.getPort();
 
         List<DatagramSocket>sockets=new ArrayList<>();
