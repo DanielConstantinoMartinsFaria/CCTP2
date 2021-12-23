@@ -24,7 +24,7 @@ public class FilesInfo {
         byte[] buffer=new byte[FFSync.SIZE];
         DatagramPacket packet = new DatagramPacket(buffer, FFSync.SIZE);
         try{
-            socket.setSoTimeout(5000);
+            //socket.setSoTimeout(5000);
             socket.receive(packet);
         } catch (SocketTimeoutException e){
             Logger.erro("Timed out expecting packet: "+e.getMessage());
