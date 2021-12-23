@@ -40,7 +40,7 @@ public class Data {
             try{
                 sendPacket(socket,address,port, bytes.get(BLOCK_NUM-1), BLOCK_NUM);
                 //socket.setSoTimeout(1000);
-                BLOCK_NUM=ACK.receive(socket);
+                BLOCK_NUM= Ack.receive(socket);
             } catch (SocketException e) {
                 BLOCK_NUM--;
             } catch (IOException e) {
@@ -48,7 +48,7 @@ public class Data {
             }
         }
         try{
-            ACK.send(socket,address,port,(short)0);
+            Ack.send(socket,address,port,(short)0);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,7 +57,7 @@ public class Data {
     private static void sendPacket(DatagramSocket socket,InetAddress address,int port,byte[] fileData,short seq) throws IOException {
         ByteArrayOutputStream bao=new ByteArrayOutputStream();
         DataOutputStream output=new DataOutputStream(bao);
-        output.write((byte)5);
+        output.write(Peer.DATA);
         output.writeShort(seq);
         output.write(fileData);
         output.flush();
@@ -68,31 +68,28 @@ public class Data {
     public static void receiveFile(DatagramSocket socket,String filename,File directory){
         short BLOCK_NUM=1;
         boolean done=false;
-        int read;
+        ArrayList<byte[]>bytes=new ArrayList<>();
         byte[] data=new byte[Peer.SIZE];
         byte[] buffer=new byte[Peer.SIZE-HEADER_SIZE];
         try{
             File file=new File(directory.getAbsolutePath()+"/"+filename);
-            FileOutputStream fileOutputStream=new FileOutputStream(file);
             while(!done){
                 DatagramPacket packet=new DatagramPacket(data,data.length);
                 //socket.setSoTimeout(5000);
                 socket.receive(packet);
                 ByteArrayInputStream bai=new ByteArrayInputStream(packet.getData());
                 DataInputStream input=new DataInputStream(bai);
-                if(input.readByte()!=(byte)5)done=true;
+                if(input.readByte()!=Peer.DATA)done=true;
                 short seq=input.readShort();
                 if(seq>=BLOCK_NUM){
                     input.read(buffer);
                     byte[]novo=unpad(buffer);
                     if(novo.length<(Peer.SIZE-HEADER_SIZE))done=true;
-                    fileOutputStream.write(novo,0,novo.length);
+                    bytes.add(novo);
                     BLOCK_NUM=seq;
                 }
-                ACK.send(socket,packet.getAddress(),packet.getPort(),BLOCK_NUM);
+                Ack.send(socket,packet.getAddress(),packet.getPort(),BLOCK_NUM);
             }
-            fileOutputStream.flush();
-            fileOutputStream.close();
 
         } catch (SocketException ignored) {
 

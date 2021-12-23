@@ -4,12 +4,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketAddress;
 
-public class ACK {
+public class Ack {
 
     public static void send(DatagramSocket socket, InetAddress address, int port, short BLOCK_NUM) throws IOException {
         ByteArrayOutputStream baos=new ByteArrayOutputStream(Peer.SIZE);
         DataOutputStream output = new DataOutputStream(baos);
-        output.write((byte)6);
+        output.write(Peer.ACK);
         output.writeShort(BLOCK_NUM);
         output.flush();
         DatagramPacket packet=new DatagramPacket(baos.toByteArray(), baos.size(),address,port);
@@ -27,7 +27,7 @@ public class ACK {
 
         byte flag= input.readByte();
 
-        if(flag!=(byte)6){
+        if(flag!=Peer.ACK){
             return 0;
         }
         else {

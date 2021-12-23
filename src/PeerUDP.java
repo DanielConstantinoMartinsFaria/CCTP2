@@ -58,7 +58,6 @@ public class PeerUDP implements Runnable{
         if(destination==null){
             try{
                 runReceiver();
-                logging();
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
@@ -66,7 +65,6 @@ public class PeerUDP implements Runnable{
         else{
             try{
                 runSender();
-                logging();
             } catch (IOException e) {
                 e.printStackTrace();
             }
