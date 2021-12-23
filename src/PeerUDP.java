@@ -14,10 +14,9 @@ public class PeerUDP implements Runnable{
     private InetAddress destination;
     private String[]args;
     private int port;
-    private PortHandler portHandler;
     private ListaFicheiros ficheiros;
 
-    public PeerUDP(DatagramSocket socket, String[] args, InetAddress dest,int port,PortHandler portHandler){
+    public PeerUDP(DatagramSocket socket, String[] args, InetAddress dest,int port){
         this.socket=socket;
         this.destination=dest;
         this.port=port;
@@ -35,7 +34,6 @@ public class PeerUDP implements Runnable{
         ficheiros=new ListaFicheiros();
         ficheiros.updateFiles(directory);
 
-        this.portHandler=portHandler;
     }
 
     public void runSender() throws IOException {
@@ -54,12 +52,17 @@ public class PeerUDP implements Runnable{
         }
         destination=packet.getAddress();
         port=packet.getPort();
-        int[] myPorts=portHandler.getPorts(files.size());
-        GetFiles.sendGetFiles(socket,destination,port,files,myPorts);
+
+        List<DatagramSocket>sockets=new ArrayList<>();
+        for(int i=0;i< files.size();i++){   //Abrir socket para receber os diferentes ficheiros
+            DatagramSocket ds=new DatagramSocket();
+            sockets.add(ds);
+        }
+
+        GetFiles.sendGetFiles(socket,destination,port,files,sockets);
 
         for(int i=0;i< files.size();i++){   //Abrir socket para receber os diferentes ficheiros
-            DatagramSocket ds=new DatagramSocket(myPorts[i]);
-            new FileSender(null,0,files.get(i),directory,ds).receiver();
+            new FileSender(null,0,files.get(i),directory,sockets.get(i)).receiver();
         }
     }
 

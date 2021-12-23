@@ -2,7 +2,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class PortHandler{
 
-    private static final int MAX=65535;
+    private static final int MAX=49000;
     private static final int MIN=1025;
 
     private int CURRENT;

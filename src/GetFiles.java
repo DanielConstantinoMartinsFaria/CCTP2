@@ -6,7 +6,7 @@ import java.util.*;
 
 public class GetFiles {
 
-    public static void sendGetFiles(DatagramSocket socket, InetAddress address, int port, List<String> files, int[] ports) throws IOException {
+    public static void sendGetFiles(DatagramSocket socket, InetAddress address, int port, List<String> files,List<DatagramSocket>sockets) throws IOException {
         ByteArrayOutputStream baos=new ByteArrayOutputStream(FFSync.SIZE);
         DataOutputStream output = new DataOutputStream(baos);
         output.write(FFSync.GETFILES);
@@ -14,7 +14,7 @@ public class GetFiles {
         output.writeInt(files.size());
         for(String filename:files){
             output.writeUTF(filename);
-            output.writeInt(ports[i]);
+            output.writeInt(sockets.get(i).getPort());
             i++;
         }
         output.flush();

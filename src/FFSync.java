@@ -14,12 +14,11 @@ public class FFSync {
     public static final byte ERROR=5;
 
     public static void main(String[]args) throws IOException, InterruptedException {
-        PortHandler portHandler=new PortHandler();
         Logger.start(args);
         DatagramSocket socket1=new DatagramSocket();
         DatagramSocket socket2=new DatagramSocket(PORT);
-        PeerUDP peerUDP1=new PeerUDP(socket1,args,InetAddress.getByName(args[1]),PORT,portHandler);
-        PeerUDP peerUDP2=new PeerUDP(socket2,args,null,0,portHandler);
+        PeerUDP peerUDP1=new PeerUDP(socket1,args,InetAddress.getByName(args[1]),PORT);
+        PeerUDP peerUDP2=new PeerUDP(socket2,args,null,0);
         Thread peer1=new Thread(peerUDP1);
         Thread peer2=new Thread(peerUDP2);
 
