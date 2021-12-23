@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.util.*;
 
 public class GetFiles {
@@ -25,8 +26,12 @@ public class GetFiles {
     public static ArrayList<ParStringInt> receiveGetFiles(DatagramSocket socket) throws IOException {
         byte[] buffer=new byte[FFSync.SIZE];
         DatagramPacket packet = new DatagramPacket(buffer, FFSync.SIZE);
-        socket.setSoTimeout(5000);
-        socket.receive(packet);
+        try{
+            socket.setSoTimeout(5000);
+            socket.receive(packet);
+        }catch (SocketTimeoutException e){
+            return null;
+        }
 
         Logger.mensagem("GetFiles",packet.getAddress(), packet.getPort());
 
