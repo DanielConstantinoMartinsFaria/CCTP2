@@ -1,10 +1,13 @@
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Data {
 
     public static final short HEADER_SIZE=3;
+    private static ReentrantLock lock=new ReentrantLock();
 
     private static ArrayList<byte[]> parsefile(String filename, File directory){
         ArrayList<byte[]> bytes=new ArrayList<>();
@@ -90,12 +93,23 @@ public class Data {
                 }
                 Ack.send(socket,packet.getAddress(),packet.getPort(),BLOCK_NUM);
             }
-
+            writeFile(bytes,file);
         } catch (SocketException ignored) {
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void writeFile(List<byte[]> bytes,File file) throws IOException {
+        lock.lock();
+        FileOutputStream outputStream=new FileOutputStream(file);
+        for(byte[]array:bytes){
+            outputStream.write(array);
+        }
+        outputStream.flush();
+        outputStream.close();
+        lock.unlock();
     }
 
     private static byte[] unpad(byte[]array){

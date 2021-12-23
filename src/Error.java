@@ -11,7 +11,7 @@ public class Error {
     public static final byte ACCESS_ERROR=2;
     public static final byte PASSWORD_FAIL=3;
 
-    public static void send(DatagramSocket socket, InetAddress address,int port, byte errorCode, String message) throws IOException {
+    public static void sendError(DatagramSocket socket, InetAddress address,int port, byte errorCode, String message) throws IOException {
         ByteArrayOutputStream baos=new ByteArrayOutputStream(Peer.SIZE);
         DataOutputStream output = new DataOutputStream(baos);
         output.write(Peer.ERROR);

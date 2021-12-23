@@ -1,20 +1,22 @@
-import java.io.DataInputStream;
-import java.io.File;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ListaFicheiros {
-    private Set<String> files;
+    private List<String> files;
 
     public ListaFicheiros(){
-        files=new TreeSet<>();
+        files=new ArrayList<>();
+    }
+
+    public ListaFicheiros(List<String> files){
+        this.files=new ArrayList<>();
+        this.files.addAll(files);
     }
 
     public void updateFiles(File directory){
+        this.files=new ArrayList<>();
         File[] files=directory.listFiles();
         if(files!=null){
             for(File f:files){
@@ -23,10 +25,37 @@ public class ListaFicheiros {
         }
     }
 
-    public boolean checkDiff(ListaFicheiros list,Set<String>send,Set<String>request){
-        send.addAll(files.stream().filter(f->!list.files.contains(f)).collect(Collectors.toSet()));
-        request.addAll(list.files.stream().filter(f->!files.contains(f)).collect(Collectors.toSet()));
-        return send.size()!=0 && request.size()!=0;
+    public void updateFiles(List<String> files){
+        this.files=new ArrayList<>();
+        this.files.addAll(files);
+    }
+
+    public boolean checkDiff(ListaFicheiros list,List<String>request){
+        request.addAll(list.files.stream().filter(f->!files.contains(f)).collect(Collectors.toList()));
+        return request.size()!=0;
+    }
+
+    public ListaFicheiros clone(){
+        ListaFicheiros nova=new ListaFicheiros(this.files);
+        return nova;
+    }
+
+    public byte[] serialize() throws IOException {
+        ByteArrayOutputStream bao=new ByteArrayOutputStream();
+        DataOutputStream output=new DataOutputStream(bao);
+        output.writeInt(files.size());
+        for(String filename:files){
+            output.writeUTF(filename);
+        }
+        return bao.toByteArray();
+    }
+
+    public void deserialize(DataInputStream din) throws IOException {
+        files=new ArrayList<>();
+        int size=din.readInt();
+        for(int i=0;i<size;i++){
+            files.add(din.readUTF());
+        }
     }
 
     public String toString(){
