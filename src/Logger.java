@@ -99,9 +99,6 @@ public class Logger {
         if(available){
             try{
                 available=false;
-                for(String msg:msgs){
-                    writer.write(msg);
-                }
                 writer.write("ERRORS:"+erros+"\n");
                 writer.write("SENT:"+envios+"\n");
                 writer.write("RECEIVED:"+rececoes+"\n");
