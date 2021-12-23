@@ -25,7 +25,7 @@ public class GetFiles {
     public static ArrayList<ParStringInt> receiveGetFiles(DatagramSocket socket) throws IOException {
         byte[] buffer=new byte[FFSync.SIZE];
         DatagramPacket packet = new DatagramPacket(buffer, FFSync.SIZE);
-        //socket.setSoTimeout(1000);
+        socket.setSoTimeout(5000);
         socket.receive(packet);
 
         Logger.mensagem("GetFiles",packet.getAddress(), packet.getPort());

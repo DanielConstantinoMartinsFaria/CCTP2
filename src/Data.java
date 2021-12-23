@@ -81,7 +81,7 @@ public class Data {
             while(!done){
                 DatagramPacket packet=new DatagramPacket(data,data.length);
                 try{
-                    socket.setSoTimeout(1000);
+                    socket.setSoTimeout(5000);
                     socket.receive(packet);
                 } catch (SocketTimeoutException e){
                     Logger.erro("Timed out expecting packet: "+e.getMessage());
