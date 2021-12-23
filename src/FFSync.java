@@ -1,7 +1,8 @@
 import java.io.*;
 import java.net.*;
+import java.util.concurrent.TimeUnit;
 
-public class Peer {
+public class FFSync {
 
     public static final int SIZE=512;
     public static final int PORT=8989;
@@ -13,9 +14,10 @@ public class Peer {
     public static final byte ERROR=5;
 
     public static void main(String[]args) throws IOException, InterruptedException {
+        PortHandler portHandler=new PortHandler();
+        Logger.start(args);
         DatagramSocket socket1=new DatagramSocket();
         DatagramSocket socket2=new DatagramSocket(PORT);
-        PortHandler portHandler=new PortHandler();
         PeerUDP peerUDP1=new PeerUDP(socket1,args,InetAddress.getLocalHost(),PORT,portHandler);
         PeerUDP peerUDP2=new PeerUDP(socket2,args,null,0,portHandler);
         Thread peer1=new Thread(peerUDP1);
@@ -26,6 +28,8 @@ public class Peer {
 
         peer1.join();
         peer2.join();
+
+        Logger.end();
     }
 
     /*

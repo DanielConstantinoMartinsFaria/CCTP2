@@ -15,7 +15,7 @@ public class Data {
         int read;
         try{
             FileInputStream input=new FileInputStream(file);
-            byte[] buffer=new byte[Peer.SIZE-HEADER_SIZE];
+            byte[] buffer=new byte[FFSync.SIZE-HEADER_SIZE];
             while((read=input.read(buffer))>0){
                 bytes.add(truncate(buffer,read));
             }
@@ -42,7 +42,8 @@ public class Data {
         for(;BLOCK_NUM<=bytes.size();BLOCK_NUM++){
             try{
                 sendPacket(socket,address,port, bytes.get(BLOCK_NUM-1), BLOCK_NUM);
-                //socket.setSoTimeout(1000);
+                Logger.envio(filename,address,port,BLOCK_NUM);
+                socket.setSoTimeout(1000);
                 BLOCK_NUM= Ack.receive(socket);
             } catch (SocketException e) {
                 BLOCK_NUM--;
@@ -60,42 +61,52 @@ public class Data {
     private static void sendPacket(DatagramSocket socket,InetAddress address,int port,byte[] fileData,short seq) throws IOException {
         ByteArrayOutputStream bao=new ByteArrayOutputStream();
         DataOutputStream output=new DataOutputStream(bao);
-        output.write(Peer.DATA);
+        output.write(FFSync.DATA);
         output.writeShort(seq);
         output.write(fileData);
         output.flush();
         DatagramPacket packet=new DatagramPacket(bao.toByteArray(),bao.size(),address,port);
         socket.send(packet);
+
     }
 
     public static void receiveFile(DatagramSocket socket,String filename,File directory){
         short BLOCK_NUM=1;
         boolean done=false;
         ArrayList<byte[]>bytes=new ArrayList<>();
-        byte[] data=new byte[Peer.SIZE];
-        byte[] buffer=new byte[Peer.SIZE-HEADER_SIZE];
+        byte[] data=new byte[FFSync.SIZE];
+        byte[] buffer=new byte[FFSync.SIZE-HEADER_SIZE];
         try{
             File file=new File(directory.getAbsolutePath()+"/"+filename);
             while(!done){
                 DatagramPacket packet=new DatagramPacket(data,data.length);
-                //socket.setSoTimeout(5000);
-                socket.receive(packet);
+                try{
+                    socket.setSoTimeout(1000);
+                    socket.receive(packet);
+                } catch (SocketTimeoutException e){
+                    Logger.erro("Timed out expecting packet: "+e.getMessage());
+                }
                 ByteArrayInputStream bai=new ByteArrayInputStream(packet.getData());
                 DataInputStream input=new DataInputStream(bai);
-                if(input.readByte()!=Peer.DATA)done=true;
+                byte flag=input.readByte();
+                if(flag== FFSync.ERROR){
+                    Error.errorHandler(input);
+                }
+                else if(flag!= FFSync.DATA){
+                    Logger.erro("Expected DATA got something else");
+                }
                 short seq=input.readShort();
+                Logger.rececao(filename,packet.getAddress(),packet.getPort(),seq);
                 if(seq>=BLOCK_NUM){
                     input.read(buffer);
                     byte[]novo=unpad(buffer);
-                    if(novo.length<(Peer.SIZE-HEADER_SIZE))done=true;
+                    if(novo.length<(FFSync.SIZE-HEADER_SIZE))done=true;
                     bytes.add(novo);
                     BLOCK_NUM=seq;
                 }
                 Ack.send(socket,packet.getAddress(),packet.getPort(),BLOCK_NUM);
             }
             writeFile(bytes,file);
-        } catch (SocketException ignored) {
-
         } catch (IOException e) {
             e.printStackTrace();
         }

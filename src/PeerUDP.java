@@ -5,7 +5,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class PeerUDP implements Runnable{
     private final String ROOT_DIR = System.getProperty("user.dir");
@@ -13,6 +12,7 @@ public class PeerUDP implements Runnable{
     private File directory;
     private DatagramSocket socket;
     private InetAddress destination;
+    private String[]args;
     private int port;
     private PortHandler portHandler;
     private ListaFicheiros ficheiros;
@@ -21,15 +21,16 @@ public class PeerUDP implements Runnable{
         this.socket=socket;
         this.destination=dest;
         this.port=port;
+        this.args=args;
 
         String path;
 
-        if(args[0]!=".")path=ROOT_DIR + "/" + args[0];
+        if(!args[0].equals("."))path=ROOT_DIR + "/" + args[0];
         else path=ROOT_DIR;
         directory=new File(path);
 
         if(!directory.exists()&&!directory.mkdirs()) {
-            System.out.println("ERROR");
+            Logger.erro("Directory not Found");
         }
         ficheiros=new ListaFicheiros();
         ficheiros.updateFiles(directory);
@@ -38,20 +39,19 @@ public class PeerUDP implements Runnable{
     }
 
     public void runSender() throws IOException {
-        String path=ROOT_DIR;
-        directory=new File(path+"/test");
-        ficheiros.updateFiles(directory);
-
-        FilesInfo.sendFilesInfo(socket,destination,ficheiros,port);
-        List<ParFilePort> filesAndPorts=GetFiles.receiveGetFiles(socket);
-        for(ParFilePort parFilePort:filesAndPorts){
-            new FileSender(destination, parFilePort.getPort(), parFilePort.getFilename(),directory,null).sender();
+        FilesInfo.sendFilesInfo(socket,destination,ficheiros,port,args[2]);
+        List<ParStringInt> filesAndPorts=GetFiles.receiveGetFiles(socket);
+        for(ParStringInt parStringInt :filesAndPorts){
+            new FileSender(destination, parStringInt.getSecond(), parStringInt.getFirst(),directory,null).sender();
         }
     }
 
     public void runReceiver() throws IOException, InterruptedException {
         List<String> files=new ArrayList<>();
-        DatagramPacket packet= FilesInfo.receiveFilesInfo(socket,ficheiros,files);
+        DatagramPacket packet= FilesInfo.receiveFilesInfo(socket,ficheiros,files,args[2]);
+        if(packet==null) {
+            return;
+        }
         destination=packet.getAddress();
         port=packet.getPort();
         int[] myPorts=portHandler.getPorts(files.size());

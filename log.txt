@@ -1,6 +1,0 @@
-Directory:.
-Peer:Not determined yet
-Port:0
-
-log.txt
-log.txt

@@ -2,7 +2,6 @@ import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketAddress;
 
 public class Error {
 
@@ -12,9 +11,9 @@ public class Error {
     public static final byte PASSWORD_FAIL=3;
 
     public static void sendError(DatagramSocket socket, InetAddress address,int port, byte errorCode, String message) throws IOException {
-        ByteArrayOutputStream baos=new ByteArrayOutputStream(Peer.SIZE);
+        ByteArrayOutputStream baos=new ByteArrayOutputStream(FFSync.SIZE);
         DataOutputStream output = new DataOutputStream(baos);
-        output.write(Peer.ERROR);
+        output.write(FFSync.ERROR);
         output.write(errorCode);
         output.writeUTF(message);
         output.flush();
@@ -25,9 +24,16 @@ public class Error {
     public static void errorHandler(DataInputStream input){
         try{
             byte errorCode= input.readByte();
-            if(errorCode==FILE_ERROR){
-                //log
+
+            String message="";
+            switch (errorCode){
+                case 0->message="";
+                case 1->message="FILE NOT FOUND:";
+                case 2->message="ACCESS VIOLATION";
+                case 3->message="WRONG PASSWORD";
             }
+            message+=input.readUTF();
+            Logger.erro(message);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,66 +1,72 @@
 import java.io.*;
 import java.lang.module.Configuration;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 public class HttpServer implements Runnable{
 
-    public boolean run;
-    public int port;
-    public ServerSocket serverSocket;
-    public String message;
+    private boolean run;
+    private int port;
+    private ServerSocket serverSocket;
+    private String message;
+
+    private static final String CRLF="\n\r";
 
 
-    public static void server (String ip){
-
-        int port = 80;
-        boolean run = true;
+    public HttpServer(){
+        port = 8080;
+        run = true;
         try{
-            ServerSocket serverSocket = new ServerSocket(port);
-            //System.out.println("Server starting...");
-            //System.out.println("Using Port: " + conf.getPort());
+            serverSocket = new ServerSocket(port,0, InetAddress.getByName(null));
             System.err.println("Server running on port: "+ port);
+            System.err.println(serverSocket.getInetAddress());
         }
         catch (IOException e){
             e.printStackTrace();
         }
-
-        String message = "Inicializando";
+        message = "<b>"+"Inicializando"+"<b>";
     }
 
-    public void newMesage(String message){}
+    public void newMesage(String message){
+        this.message="<b>"+message+"<b>";
+    }
+
+    public void turnOFF() throws IOException {
+        run =false;
+    }
+
+    private void handleClient(Socket clientSocket) throws IOException {
+        InputStream inputStream=clientSocket.getInputStream();
+        OutputStream outputStream=clientSocket.getOutputStream();
+
+
+        String response="HTTP/1.1 200 OK"+CRLF+
+                "Content-Length: "+
+                message.getBytes().length+CRLF+CRLF+
+                message+CRLF+CRLF;
+
+        outputStream.write(response.getBytes());
+        outputStream.flush();
+        outputStream.close();
+
+
+        inputStream.close();
+        outputStream.close();
+    }
 
     @Override
     public void run() {
-        try{
-            while (run) {
-
+        while (run) {
+            try{
                 Socket clientSocket = serverSocket.accept();
-                System.err.println("Client connected");
-                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                String s;
-                while((s = in.readLine())!=null){
-                    System.out.println(s);
-                    if(s.isEmpty()){
-                        break;
-                    }
-                }
-
-                OutputStream clientOutput = clientSocket.getOutputStream();
-                clientOutput.write("HTTP/1.1 200 OK\r\n".getBytes());
-                clientOutput.write("\r\n".getBytes());
-                String m = "<b>" + message + "</b>";
-                clientOutput.write(m.getBytes());
-                clientOutput.write("\r\n\r\n".getBytes());
-                clientOutput.flush();
-                System.err.println("Client connection closed!");
-                in.close();
-                clientOutput.close();
+                handleClient(clientSocket);
+                serverSocket.close();
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }
-        catch (IOException e){
-            e.printStackTrace();
         }
     }
 }

@@ -1,36 +1,85 @@
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Logger implements Runnable{
+public class Logger {
 
     private static final String LOG_NAME="log.txt";
 
-    private String[] args;
-    private ListaFicheiros listaFicheiros;
+    private static String[] args;
+    private static List<String> msgs;
+    private static int erros;
+    private static int envios;
+    private static int rececoes;
+    private static FileWriter writer;
+    private static boolean available;
 
-    public Logger(String[]args, ListaFicheiros listaFicheiros){
-        this.args=args.clone();
-        this.listaFicheiros=listaFicheiros.clone();
+    public static void start(String[]args) {
+        try{
+            Logger.args =args;
+            Logger.msgs=new ArrayList<>();
+            Logger.envios=0;
+            Logger.rececoes=0;
+            Logger.erros=0;
+            Logger.writer=new FileWriter(LOG_NAME);
+            Logger.available=true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private String date(){
+    private static String date(){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
         return dtf.format(now);
     }
 
-    public void error(String message){
-
-    }
-
-    @Override
-    public void run() {
-        try {
-            FileWriter writer =new FileWriter(LOG_NAME);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static void erro(String message){
+        if(available){
+            String msg= date()+"|"+"ERROR:"+": "+message;
+            msgs.add(msg+"\n");
+            erros++;
         }
     }
+
+    public static void envio(String filename, InetAddress address, int port, short BLOCK_NUM){
+        if(available){
+            String msg= date()+"|"+"SENT TO: "+address.getHostName()+":"+port+" | File: "+filename+" Block: "+BLOCK_NUM;
+            msgs.add(msg+"\n");
+            envios++;
+        }
+    }
+
+    public static void rececao(String filename, InetAddress address, int port, short BLOCK_NUM){
+        if(available){
+            String msg= date()+"|"+"RECEIVED FROM: "+address.getHostName()+":"+port+" | File: "+filename+" Block: "+BLOCK_NUM;
+            msgs.add(msg+"\n");
+            rececoes++;
+        }
+    }
+
+    public static void end(){
+        if(available){
+            try{
+                available=false;
+                writer.write("LOG:"+LOG_NAME);
+                writer.write("DIR:"+args[0]+"\n");
+                writer.write("PEER:"+args[1]+"\n\n\n");
+                for(String msg:msgs){
+                    writer.write(msg);
+                }
+                writer.write("ERRORS:"+erros+"\n");
+                writer.write("SENT:"+envios+"\n");
+                writer.write("RECEIVED:"+rececoes+"\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 }
