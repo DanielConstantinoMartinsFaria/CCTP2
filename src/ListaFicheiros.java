@@ -19,7 +19,7 @@ public class ListaFicheiros {
         File[] files=directory.listFiles();
         if(files!=null){
             for(File f:files){
-                if(!f.isDirectory())this.files.add(f.getName());
+                if(!f.isDirectory()&&!f.getName().equals("log.txt"))this.files.add(f.getName());
             }
         }
     }

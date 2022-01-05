@@ -36,7 +36,7 @@ public class Data {
         return novo;
     }
 
-    public static void sendFile(DatagramSocket socket, InetAddress address,int port, String filename, File directory) throws IOException {
+    public static void sendFile(DatagramSocket socket, InetAddress address,int port, String filename, File directory) {
         ArrayList<byte[]>bytes=parsefile(filename,directory);
         short BLOCK_NUM=1;
         for(;BLOCK_NUM<=bytes.size();BLOCK_NUM++){
@@ -45,7 +45,7 @@ public class Data {
                 Logger.envio(filename,address,port,BLOCK_NUM);
                 socket.setSoTimeout(1000);
                 BLOCK_NUM= Ack.receive(socket);
-            } catch (SocketException e) {
+            } catch (IOException e) {
                 Logger.erro("Timed out expecting ACK"+e.getMessage());
                 BLOCK_NUM--;
             }

@@ -23,14 +23,16 @@ public class FilesInfo {
     public static DatagramPacket receiveFilesInfo(DatagramSocket socket, ListaFicheiros listaFicheiros, List<String> filesToGet,String password,int count) throws IOException {
         byte[] buffer=new byte[FFSync.SIZE];
         DatagramPacket packet = new DatagramPacket(buffer, FFSync.SIZE);
-        try{
-            //socket.setSoTimeout(5000);
-            socket.receive(packet);
-        } catch (SocketTimeoutException e){
-            Logger.erro("Timed out expecting packet: "+e.getMessage());
-            if(count<20)receiveFilesInfo(socket,listaFicheiros,filesToGet,password,count+1);
-            return null;
+        while(count<20){
+            try{
+                socket.setSoTimeout(5000);
+                socket.receive(packet);
+            } catch (SocketTimeoutException e){
+                Logger.erro("Timed out expecting packet: "+e.getMessage());
+                count++;
+            }
         }
+
 
         Logger.mensagem("FilesInfo",packet.getAddress(), packet.getPort());
 

@@ -41,7 +41,7 @@ public class PeerUDP implements Runnable{
         while(filesAndPorts==null){
             FilesInfo.sendFilesInfo(socket,destination,ficheiros,port,args[2]);
             filesAndPorts=GetFiles.receiveGetFiles(socket);
-            Logger.erro("Timed out expecting packet");
+            if (filesAndPorts==null)Logger.erro("Timed out expecting packet");
         }
         for(ParStringInt parStringInt :filesAndPorts){
             Data.sendFile(socket,destination,port,parStringInt.getFirst(),directory);
@@ -53,7 +53,7 @@ public class PeerUDP implements Runnable{
         DatagramPacket packet=null;
         while(packet==null){
             packet=FilesInfo.receiveFilesInfo(socket,ficheiros,files,args[2],0);
-            Logger.erro("Timed out expecting packet");
+            if (packet==null)Logger.erro("Timed out expecting packet");
         }
 
         destination=packet.getAddress();

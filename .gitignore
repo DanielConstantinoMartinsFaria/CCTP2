@@ -1,4 +1,6 @@
 /out
-/test
+/src/test
 /teste
 *.txt
+/src/testando
+*.class
